@@ -1,0 +1,173 @@
+﻿@page "/ReadFile2"
+
+@using Microsoft.Extensions.Logging
+@using System.Net.Http.Headers
+@using System.Collections
+@using System.Globalization
+@using System.Net
+@using System.Text
+@inject HttpClient client
+
+@inject IJSRuntime js;
+
+<h3>Выберите файл для загрузки</h3>
+
+@*<InputFile OnChange="SingleAction.Invoke" class="btn btn-success" CustomSuccessMessage="Your file uploaded successfully."
+           MaxFileSize=20000000 AllowedExtensions=".scripts;" FileTooLargeMessage="File is too lage" />*@
+<InputFile OnChange="SingleAction.Invoke" class="btn btn-success" CustomSuccessMessage="Your file uploaded successfully."
+           MaxFileSize=200000000 FileTooLargeMessage="File is too lage" />
+<InputFile OnChange="MultipleAction.Invoke" multiple class="btn btn-success" />
+<br />
+
+<!--#region New-->
+@*<RadzenProgressBar Value="@progress" Unit="@info" Visible="@(progress > 0)" Style="margin-bottom: 20px; width: 300px"  />
+
+    <div class="row">
+            <div class="col-md-6">
+                <h3>Single file upload</h3>
+                <RadzenUpload Url=@($"BstoReadScript/SendScript/{notifi.UserId}") Style="margin-bottom: 20px;"
+                              Progress="@((args) => OnProgress(args, "Single file upload"))" Complete="@SingleCompleted"/>
+                <br />
+                <h3>Multiple files upload</h3>
+                <RadzenUpload Multiple="true" Url=@($"BstoReadScript/SendScripts/{notifi.UserId}") Style="margin-bottom: 20px;"
+                              Progress="@((args) => OnProgress(args, "Multiple files upload"))" Complete="@MultipleCompleted"/>
+            </div>
+        </div>
+*@
+<!--#endregion-->
+
+@code
+{
+    #region Overrides of ComponentBase
+
+    protected override void OnInitialized()
+    {
+        SingleAction += async f => await HandleSelected(f, false);
+        MultipleAction += async f => await HandleSelected(f, true);
+    }
+
+    #endregion
+
+    string[] extensions = { "script", "tgz" };
+
+    bool CheckExtension(string value)
+    {
+        foreach (var ex in extensions)
+        {
+            if (string.Compare(ex, value, true, CultureInfo.InvariantCulture) == 0)
+                return true;
+        }
+        return false;
+    }
+
+    long MaxFIleSize = long.MaxValue;
+    Action<InputFileChangeEventArgs> SingleAction;
+    Action<InputFileChangeEventArgs> MultipleAction;
+    private async Task HandleSelected(InputFileChangeEventArgs Files, bool isMultiple)
+    {
+        var content = new MultipartFormDataContent();
+        var support_count = 0;
+        foreach (var file in Files.GetMultipleFiles())
+        {
+            Console.WriteLine($"upload file: {file.Name} {file.ContentType} {file.Size}b");
+            var extension = Path.GetExtension(file.Name).ToLower().Trim(new[] { '.', ' ' });
+            //if (!CheckExtension(extension))
+            //{
+            //    Console.WriteLine($"File type - \"{extension}\" not support, u can use \"script\" or \"tgz\" files");
+            //    continue;
+            //}
+            content.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data");
+            content.Add(new StreamContent(file.OpenReadStream(MaxFIleSize), Convert.ToInt32(file.Size)), "script", file.Name);
+            support_count++;
+        }
+        if (support_count > 0)
+        {
+            try
+            {
+                await Task.Delay(0).ContinueWith(t => UploadFile(content, isMultiple));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                Console.WriteLine();
+                Console.WriteLine();
+                Console.WriteLine(e.InnerException);
+                Console.WriteLine();
+                Console.WriteLine();
+                Console.WriteLine();
+                Console.WriteLine(e);
+
+            }
+        }
+
+    }
+
+    public async Task UploadFile(MultipartFormDataContent content, bool isMultiple)
+    {
+        HttpResponseMessage postResult;
+        if (isMultiple)
+            postResult = await client.PostAsync($"WeatherForecast/SendMany", content);
+        else
+            postResult = await client.PostAsync($"WeatherForecast/SendOne", content);
+        if (!postResult.IsSuccessStatusCode)
+        {
+            Console.WriteLine(await postResult.Content.ReadAsStringAsync());
+            return;
+        }
+        //await GetReportFile(await postResult.Content.ReadAsStringAsync());
+        //await js.GetReportFile(await postResult.Content.ReadAsStringAsync());
+        if (!isMultiple)
+        {
+            var fileName = await postResult.Content.ReadAsStringAsync();
+            await Task.Delay(0).ContinueWith(t=>Console.WriteLine($"Загружено {fileName}", "Успешно"));
+        }
+        else
+        {
+            var fileNames = await postResult.Content.ReadFromJsonAsync<List<string>>();
+
+            if(fileNames is not null)
+                foreach (var fileName in fileNames.AsParallel())
+                {
+                    Console.WriteLine($"Загружено {fileName}", "Успешно");
+                }
+            else
+                Console.WriteLine("Null from server");
+
+        }
+
+        //await js.SaveAs(await postResult.Content.ReadAsStringAsync(), Content);
+    }
+
+    #region New
+    RadzenUpload upload;
+
+    int progress;
+    string info;
+
+    async void OnChange(UploadChangeEventArgs args, string name)
+    {
+        foreach (var file in args.Files)
+        {
+            Console.WriteLine($"File: {file.Name} / {file.Size} bytes");
+        }
+        Console.WriteLine($"{name} changed");
+    }
+
+    async void OnProgress(UploadProgressArgs args, string name)
+    {
+        info = $"% '{name}' / {args.Loaded} of {args.Total} bytes.";
+        progress = args.Progress;
+
+        if (args.Progress == 100)
+        {
+            foreach (var file in args.Files)
+            {
+                Console.WriteLine($"Uploaded: {file.Name} / {file.Size} bytes");
+            }
+        }
+    }
+
+    #endregion
+
+}
+
