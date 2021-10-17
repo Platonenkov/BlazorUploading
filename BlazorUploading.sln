@@ -3,11 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31702.278
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorUploading.Server", "BlazorUploading\Server\BlazorUploading.Server.csproj", "{3BBAC768-1EA3-4301-ACCB-3FA9C2ADF989}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorUploading.Server", "BlazorUploading\Server\BlazorUploading.Server.csproj", "{3BBAC768-1EA3-4301-ACCB-3FA9C2ADF989}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorUploading.Client", "BlazorUploading\Client\BlazorUploading.Client.csproj", "{8CD4337E-A4E7-47C1-B715-9930EF7E4A1F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorUploading.Client", "BlazorUploading\Client\BlazorUploading.Client.csproj", "{8CD4337E-A4E7-47C1-B715-9930EF7E4A1F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorUploading.Shared", "BlazorUploading\Shared\BlazorUploading.Shared.csproj", "{9270D52F-DE87-4DA0-BC1F-27B92CBFFF11}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorUploading.Shared", "BlazorUploading\Shared\BlazorUploading.Shared.csproj", "{9270D52F-DE87-4DA0-BC1F-27B92CBFFF11}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebUpLoadingTest", "WebUpLoadingTest\WebUpLoadingTest.csproj", "{C8028F71-6308-416D-B5A4-A7D4182D42BE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{9270D52F-DE87-4DA0-BC1F-27B92CBFFF11}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9270D52F-DE87-4DA0-BC1F-27B92CBFFF11}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9270D52F-DE87-4DA0-BC1F-27B92CBFFF11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8028F71-6308-416D-B5A4-A7D4182D42BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8028F71-6308-416D-B5A4-A7D4182D42BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8028F71-6308-416D-B5A4-A7D4182D42BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8028F71-6308-416D-B5A4-A7D4182D42BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
